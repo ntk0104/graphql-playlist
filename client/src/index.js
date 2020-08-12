@@ -16,9 +16,9 @@ const MOUNT_NODE = document.getElementById('root');
 const ConnectedApp = ({ Component }) => (
   <Provider store={store}>
     <HelmetProvider>
-      <React.StrictMode>
+      {/* <React.StrictMode> */}
         <Component />
-      </React.StrictMode>
+      {/* </React.StrictMode> */}
     </HelmetProvider>
   </Provider>
 );

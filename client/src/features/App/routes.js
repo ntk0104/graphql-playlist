@@ -10,10 +10,15 @@ import loadable from 'utils/loadable';
 import { checkToken } from 'utils/cookies';
 import { history } from 'utils/history';
 import * as routes from 'constants/routes';
-
 import './index.scss';
-
 import { loginSuccess } from 'features/App/slice';
+import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+
+const client = new ApolloClient({
+  uri: 'http://localhost:4000/graphql',
+  cache: new InMemoryCache()
+});
+
 
 const LandingPage = loadable(() => import('features/App/pages/Home'));
 const Login = loadable(() => import('features/App/pages/Login'));
@@ -25,7 +30,7 @@ const App = () => {
   const token = checkToken();
   if (token !== null) dispatch(loginSuccess({ token }));
   return (
-    <>
+    <ApolloProvider client={client}>
       <GlobalLoading />
       <Router history={history}>
         <Switch>
@@ -36,7 +41,7 @@ const App = () => {
           <Route component={NotFound} />
         </Switch>
       </Router>
-    </>
+    </ApolloProvider>
   );
 };
 
