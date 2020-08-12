@@ -3,7 +3,10 @@ const Book = require('../models/book')
 const Author = require('../models/author')
 const _ = require('lodash')
 
-const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID, GraphQLInt, GraphQLList } = graphql
+const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull } = graphql
+
+// MODEL: định dạng cho từng document trong DB, nó là 1 đại diện cho DB
+// TYPE: định dạng kiểu dữ liệu do mình đặt ra, có thể link với các kiểu (như nó) khác để ra được kiểu dữ liệu mình mong muốn
 
 const BookType = new GraphQLObjectType({
   name: 'Book',
@@ -15,7 +18,7 @@ const BookType = new GraphQLObjectType({
       type: AuthorType,
       resolve(parent, args) {
         // parent is fully current selected object
-        // return _.find(authors, { id: parent.authorId })
+        return Author.findById(parent.authorId)
       }
     }
   })
@@ -30,7 +33,7 @@ const AuthorType = new GraphQLObjectType({
     books: {
       type: new GraphQLList(BookType),
       resolve(parent, args) {
-        // return _.filter(books, { authorId: parent.id })
+        return Book.find({ authorId: parent.id })
       }
     }
   })
@@ -43,27 +46,28 @@ const RootQuery = new GraphQLObjectType({
       type: BookType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
-        // code to get data from db/ other resource
-        return _.find(books, { id: args.id })
+        return Book.find({ id: args.id })
       }
     },
     author: {
       type: AuthorType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
-        // return _.find(authors, { id: args.id })
+        return Author.find({ id: args.id })
       }
     },
     books: {
       type: new GraphQLList(BookType),
       resolve(parent, args) {
-
+        // return all
+        return Book.find({})
       }
     },
     authors: {
       type: new GraphQLList(AuthorType),
       resolve(parent, args) {
-
+        //return all
+        return Author.find({})
       }
     }
   }
@@ -83,8 +87,23 @@ const Mutation = new GraphQLObjectType({
           name: args.name,
           age: args.age
         })
-        console.log("resolve -> author", author)
         return author.save()
+      }
+    },
+    addBook: {
+      type: BookType,
+      args: {
+        name: { type: GraphQLString },
+        genre: { type: GraphQLString },
+        authorId: { type: GraphQLID },
+      },
+      resolve(parent, args) {
+        let book = new Book({
+          name: args.name,
+          genre: args.genre,
+          authorId: args.authorId
+        })
+        return book.save()
       }
     }
   }

@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 
 const app = express()
 
-mongoose.connect('mongodb+srv://admin:admin@cluster0.mnhlf.mongodb.net/grapql-playlist?retryWrites=true&w=majority')
+mongoose.connect('mongodb+srv://admin:admin@cluster0-vzro8.mongodb.net/grapql-playlist?retryWrites=true&w=majority')
 mongoose.connection.once('open', () => {
     console.log('conneted to database');
 });
