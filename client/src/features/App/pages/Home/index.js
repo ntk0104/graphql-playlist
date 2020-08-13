@@ -10,6 +10,7 @@ const BOOKS = gql`
   query GetBooks {
     books {
       name
+      id
     }
   }
 `;
@@ -20,12 +21,11 @@ HomePage.propTypes = {};
 function HomePage() {
   const dispatch = useDispatch()
   const { loading, error, data } = useQuery(BOOKS);
-  console.log("HomePage -> data", data)
-  if (loading){
-    dispatch(toggleLoading(true))
-  } else {
-    dispatch(toggleLoading(false))
-  }
+  
+  useEffect(() => {
+    dispatch(toggleLoading(loading))
+  }, [loading])
+  
   return (
     <>
       <Helmet>
@@ -34,9 +34,9 @@ function HomePage() {
       </Helmet>
       <div className="container">
         <ul>
-          { _.get(data, 'books', []).map(book => (
-            <li>{book.name}</li>
-          )) }
+          {_.get(data, 'books', []).map(book => (
+            <li key={book.id}>{book.name}</li>
+          ))}
         </ul>
       </div>
     </>
