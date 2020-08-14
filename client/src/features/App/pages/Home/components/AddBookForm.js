@@ -12,8 +12,8 @@ function AddBookForm(props) {
   const [genre, setGenre] = useState('')
   const [authorId, setAuthorID] = useState('')
   const { loading, error, data: authorsData } = useQuery(AuthorQueries.listAuthorName);
-  const [addBook, { data: addedBookData }] = useMutation(BookQueries.addBook);
-  console.log("AddBookForm -> addedBookData", addedBookData)
+  console.log("AddBookForm -> loading", loading)
+  const [addBook] = useMutation(BookQueries.addBook);
 
   useEffect(() => {
     dispatch(toggleLoading(loading))
@@ -21,11 +21,14 @@ function AddBookForm(props) {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    addBook({ variables: {
-      name,
-      genre,
-      authorId: authorId
-  } })
+    addBook({
+      variables: {
+        name,
+        genre,
+        authorId: authorId
+      },
+      refetchQueries: [{ query: BookQueries.listBookName }]
+    })
   }
 
   return (
